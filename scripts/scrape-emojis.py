@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Scrape emoji data from Unicode emoji list and generate JSON for React app.
+Scrape emoji data from Unicode emoji list and generate JSON for site to use.
 """
 
 import json

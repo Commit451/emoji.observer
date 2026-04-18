@@ -14,7 +14,7 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/emojis.json')
+    fetch(`${import.meta.env.BASE_URL}emojis.json`)
       .then(res => res.json())
       .then(data => {
         setEmojis(data);
@@ -47,7 +47,7 @@ function App() {
   return (
     <div className="App">
       <header>
-        <h1>Emoji Picker 🎉</h1>
+        <h1>emoji.observer 👀</h1>
         <p className="subtitle">Tap any emoji to copy it to your clipboard</p>
       </header>
 
@@ -75,8 +75,6 @@ function App() {
         <p className="loading">Loading emojis...</p>
       ) : (
         <>
-          <p className="count">Showing {filteredEmojis.length} of {emojis.length} emojis</p>
-
           <div className="emoji-grid">
         {filteredEmojis.length > 0 ? (
           filteredEmojis.map((item, index) => (

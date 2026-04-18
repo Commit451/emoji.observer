@@ -4,8 +4,8 @@
   "private": true,
   "dependencies": {
     "@types/node": "^22.15.21",
-    "astro": "^6.1.7",
-    "typescript": "^4.9.5"
+    "astro": "^5.18.1",
+    "typescript": "^5.9.3"
   },
   "scripts": {
     "dev": "astro dev",

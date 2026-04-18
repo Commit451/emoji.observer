@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 :root {
   color-scheme: dark;
 }
@@ -159,11 +163,6 @@ body.show-emoji-names .emoji-name {
   background: #171b22;
   border-radius: 12px;
   border: 1px solid #232933;
-}
-
-.no-results[hidden],
-.toast[hidden] {
-  display: none;
 }
 
 .toast {

@@ -1,0 +1,135 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/emoji-picker.css';
+import emojis from '../data/emojis.json';
+---
+
+<BaseLayout>
+  <div class="App">
+    <header>
+      <h1>emoji.observer 👀</h1>
+      <p class="subtitle">Tap any emoji to copy it to your clipboard</p>
+    </header>
+
+    <div class="search-container">
+      <input
+        id="emoji-search"
+        type="text"
+        class="search-bar"
+        placeholder="Search emojis..."
+        autocomplete="off"
+        autofocus
+      />
+      <button
+        id="clear-search"
+        class="clear-btn"
+        title="Clear search"
+        type="button"
+        hidden
+      >
+        ×
+      </button>
+    </div>
+
+    <div id="emoji-grid" class="emoji-grid">
+      {emojis.map((item, index) => (
+        <button
+          class="emoji-item"
+          title={item.name}
+          type="button"
+          data-emoji={item.emoji}
+          data-name={item.name.toLowerCase()}
+          data-index={index}
+        >
+          <span class="emoji-char">{item.emoji}</span>
+          <span class="emoji-name">{item.name}</span>
+        </button>
+      ))}
+    </div>
+
+    <div id="no-results" class="no-results" hidden>
+      No emojis found for "<span id="no-results-term"></span>"
+    </div>
+
+    <div id="toast" class="toast" hidden></div>
+  </div>
+
+  <script is:inline>
+    const searchInput = document.querySelector('#emoji-search');
+    const clearButton = document.querySelector('#clear-search');
+    const emojiGrid = document.querySelector('#emoji-grid');
+    const emojiItems = Array.from(document.querySelectorAll('.emoji-item'));
+    const noResults = document.querySelector('#no-results');
+    const noResultsTerm = document.querySelector('#no-results-term');
+    const toast = document.querySelector('#toast');
+
+    let toastTimer;
+
+    const showToast = (message) => {
+      if (!toast) return;
+      toast.textContent = message;
+      toast.hidden = false;
+      toast.classList.remove('toast-visible');
+      void toast.offsetWidth;
+      toast.classList.add('toast-visible');
+
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => {
+        toast.hidden = true;
+        toast.classList.remove('toast-visible');
+      }, 2000);
+    };
+
+    const updateFilter = () => {
+      if (!searchInput || !clearButton || !emojiGrid || !noResults || !noResultsTerm) return;
+
+      const term = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
+
+      clearButton.hidden = term.length === 0;
+      document.body.classList.toggle('show-emoji-names', term.length > 0);
+
+      for (const item of emojiItems) {
+        const emoji = item.getAttribute('data-emoji') ?? '';
+        const name = item.getAttribute('data-name') ?? '';
+        const matches = term.length === 0 || name.includes(term) || emoji.includes(term);
+
+        item.hidden = !matches;
+        if (matches) visibleCount += 1;
+      }
+
+      const hasResults = visibleCount > 0;
+      emojiGrid.hidden = !hasResults;
+      noResults.hidden = hasResults;
+      noResultsTerm.textContent = searchInput.value;
+    };
+
+    searchInput?.addEventListener('input', updateFilter);
+    clearButton?.addEventListener('click', () => {
+      if (!searchInput) return;
+      searchInput.value = '';
+      searchInput.focus();
+      updateFilter();
+    });
+
+    document.addEventListener('click', async (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const emojiItem = target.closest('.emoji-item');
+      if (!(emojiItem instanceof HTMLElement)) return;
+
+      const emoji = emojiItem.dataset.emoji;
+      if (!emoji) return;
+
+      try {
+        await navigator.clipboard.writeText(emoji);
+        showToast(`Copied ${emoji} to clipboard!`);
+      } catch (error) {
+        console.error('Failed to copy:', error);
+      }
+    });
+
+    updateFilter();
+  </script>
+</BaseLayout>

@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+:root {
+  color-scheme: dark;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
   background: #0f1115;
@@ -107,12 +111,15 @@ h1 {
   align-items: center;
   justify-content: center;
   padding: 15px;
+  width: 100%;
   background: #1d232d;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   border: 1px solid #2a313d;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  appearance: none;
+  font: inherit;
 }
 
 .emoji-item:hover {
@@ -132,11 +139,16 @@ h1 {
 }
 
 .emoji-name {
+  display: none;
   font-size: 0.7rem;
   color: #a8b0bd;
   text-align: center;
   word-break: break-word;
   line-height: 1.2;
+}
+
+body.show-emoji-names .emoji-name {
+  display: block;
 }
 
 .no-results {
@@ -147,6 +159,11 @@ h1 {
   background: #171b22;
   border-radius: 12px;
   border: 1px solid #232933;
+}
+
+.no-results[hidden],
+.toast[hidden] {
+  display: none;
 }
 
 .toast {
@@ -164,9 +181,8 @@ h1 {
   animation: fadeInOut 2s ease forwards;
 }
 
-.loading {
-  color: #c4ccd7;
-  text-align: center;
+.toast-visible {
+  display: block;
 }
 
 @keyframes fadeInOut {

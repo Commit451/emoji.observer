@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """
-Scrape emoji data from Unicode emoji list and generate JSON for site to use.
+Scrape emoji data from the Unicode emoji list and generate JSON for the site.
 """
 
 import json
-import re
 import requests
 from bs4 import BeautifulSoup
 from pathlib import Path
@@ -92,19 +91,11 @@ def save_emojis(emojis, output_path):
         json.dump(emojis, f, ensure_ascii=False, indent=2)
     print(f"Saved {len(emojis)} emojis to {output_path}")
 
-def generate_ts_file(emojis, output_path):
-    """Generate TypeScript file from emojis."""
-    ts_content = "const emojis = " + json.dumps(emojis, ensure_ascii=False, indent=2) + ";\n\nexport default emojis;\n"
-    
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(ts_content)
-    print(f"Generated TypeScript file: {output_path}")
-
 def main():
     # Paths
     project_root = Path(__file__).parent.parent
-    json_output = project_root / 'public' / 'emojis.json'
-    ts_output = project_root / 'src' / 'emojis.ts'
+    json_output = project_root / 'src' / 'data' / 'emojis.json'
+    json_output.parent.mkdir(parents=True, exist_ok=True)
     
     # Scrape
     emojis = scrape_emojis()
@@ -112,15 +103,11 @@ def main():
     # Deduplicate
     unique_emojis = deduplicate_emojis(emojis)
     
-    # Save as JSON for the web app to load
+    # Save as JSON for the Astro app to import at build time
     save_emojis(unique_emojis, json_output)
-    
-    # Also generate TypeScript file (for direct import if preferred)
-    generate_ts_file(unique_emojis, ts_output)
-    
-    print("\nDone! You now have:")
-    print(f"  - {json_output} (for dynamic loading)")
-    print(f"  - {ts_output} (for direct import)")
+
+    print("\nDone!")
+    print(f"  - {json_output}")
     print(f"\nTotal emojis: {len(unique_emojis)}")
 
 if __name__ == '__main__':

@@ -1,0 +1,63 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'emoji.observer | Search and Copy Emojis',
+  description = 'Search, browse, and copy thousands of emojis from a fast, lightweight emoji picker.',
+} = Astro.props;
+
+const basePath = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const assetBaseUrl = new URL(basePath, Astro.site);
+const faviconUrl = new URL('favicon.ico', assetBaseUrl);
+const manifestUrl = new URL('manifest.json', assetBaseUrl);
+const socialImageUrl = new URL('logo512.png', assetBaseUrl);
+const homeUrl = new URL(basePath, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0f1115" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/x-icon" href={faviconUrl.pathname} />
+    <link rel="manifest" href={manifestUrl.pathname} />
+    <link rel="canonical" href={canonicalUrl.toString()} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="emoji.observer" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl.toString()} />
+    <meta property="og:image" content={socialImageUrl.toString()} />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl.toString()} />
+
+    <title>{title}</title>
+
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'emoji.observer',
+        url: homeUrl.toString(),
+        description,
+      })}
+    />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

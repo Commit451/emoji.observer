@@ -100,7 +100,7 @@ h1 {
 
 .emoji-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
   gap: 15px;
   padding: 10px;
   background: #171b22;
@@ -144,11 +144,14 @@ h1 {
 
 .emoji-name {
   display: none;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: #a8b0bd;
   text-align: center;
+  overflow-wrap: break-word;
   word-break: break-word;
   line-height: 1.2;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 body.show-emoji-names .emoji-name {

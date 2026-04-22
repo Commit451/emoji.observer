@@ -112,6 +112,13 @@ import emojis from '../data/emojis.json';
       updateFilter();
     });
 
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
+        e.preventDefault();
+        searchInput?.focus();
+      }
+    });
+
     document.addEventListener('click', async (event) => {
       const target = event.target;
       if (!(target instanceof Element)) return;

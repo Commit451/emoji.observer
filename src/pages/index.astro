@@ -2,6 +2,17 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/emoji-picker.css';
 import emojis from '../data/emojis.json';
+import { buildEmojiSlugs } from '../utils/slug';
+
+const slugs = buildEmojiSlugs(emojis);
+
+// Above-the-fold items render as full anchors for crawlers and no-JS users;
+// the rest ship as a compact JSON blob and the inline script hydrates them.
+const SSR_COUNT = 120;
+const ssrItems = emojis.slice(0, SSR_COUNT).map((item, i) => ({ ...item, slug: slugs[i] }));
+const lazyItems = emojis
+  .slice(SSR_COUNT)
+  .map((item, i) => [item.emoji, item.name, slugs[i + SSR_COUNT]]);
 ---
 
 <BaseLayout>
@@ -32,20 +43,22 @@ import emojis from '../data/emojis.json';
     </div>
 
     <div id="emoji-grid" class="emoji-grid">
-      {emojis.map((item, index) => (
-        <button
-          class="emoji-item"
-          title={item.name}
-          type="button"
-          data-emoji={item.emoji}
-          data-name={item.name.toLowerCase()}
-          data-index={index}
-        >
-          <span class="emoji-char">{item.emoji}</span>
-          <span class="emoji-name">{item.name}</span>
-        </button>
+      {ssrItems.map((item) => (
+        <div class="emoji-item">
+          <button type="button" class="emoji-copy" title={`Copy ${item.name}`}>
+            <span class="emoji-char">{item.emoji}</span>
+            <span class="emoji-name">{item.name}</span>
+          </button>
+          <a href={`/emoji/${item.slug}/`} class="emoji-details" aria-label={`Details for ${item.name}`} title="Details">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+              <circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" />
+            </svg>
+          </a>
+        </div>
       ))}
     </div>
+
+    <script type="application/json" id="emoji-data" set:html={JSON.stringify(lazyItems)} />
 
     <div id="no-results" class="no-results" hidden>
       No emojis found for "<span id="no-results-term"></span>"
@@ -58,10 +71,54 @@ import emojis from '../data/emojis.json';
     const searchInput = document.querySelector('#emoji-search');
     const clearButton = document.querySelector('#clear-search');
     const emojiGrid = document.querySelector('#emoji-grid');
-    const emojiItems = Array.from(document.querySelectorAll('.emoji-item'));
     const noResults = document.querySelector('#no-results');
     const noResultsTerm = document.querySelector('#no-results-term');
     const toast = document.querySelector('#toast');
+    const dataEl = document.querySelector('#emoji-data');
+
+    if (emojiGrid && dataEl) {
+      const lazy = JSON.parse(dataEl.textContent || '[]');
+      const dotsSvg =
+        '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">' +
+        '<circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
+      const frag = document.createDocumentFragment();
+      for (const [emoji, name, slug] of lazy) {
+        const wrap = document.createElement('div');
+        wrap.className = 'emoji-item';
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'emoji-copy';
+        btn.title = `Copy ${name}`;
+        const c = document.createElement('span');
+        c.className = 'emoji-char';
+        c.textContent = emoji;
+        const n = document.createElement('span');
+        n.className = 'emoji-name';
+        n.textContent = name;
+        btn.appendChild(c);
+        btn.appendChild(n);
+
+        const details = document.createElement('a');
+        details.href = `/emoji/${slug}/`;
+        details.className = 'emoji-details';
+        details.setAttribute('aria-label', `Details for ${name}`);
+        details.title = 'Details';
+        details.innerHTML = dotsSvg;
+
+        wrap.appendChild(btn);
+        wrap.appendChild(details);
+        frag.appendChild(wrap);
+      }
+      emojiGrid.appendChild(frag);
+    }
+
+    // Cache name/emoji per item once so the search filter doesn't re-read DOM each keystroke.
+    const itemRecords = Array.from(document.querySelectorAll('.emoji-item')).map((el) => ({
+      el,
+      emoji: el.querySelector('.emoji-char')?.textContent ?? '',
+      name: (el.querySelector('.emoji-name')?.textContent ?? '').toLowerCase(),
+    }));
 
     let toastTimer;
 
@@ -89,12 +146,9 @@ import emojis from '../data/emojis.json';
       clearButton.hidden = term.length === 0;
       document.body.classList.toggle('show-emoji-names', term.length > 0);
 
-      for (const item of emojiItems) {
-        const emoji = item.getAttribute('data-emoji') ?? '';
-        const name = item.getAttribute('data-name') ?? '';
-        const matches = term.length === 0 || name.includes(term) || emoji.includes(term);
-
-        item.hidden = !matches;
+      for (const r of itemRecords) {
+        const matches = term.length === 0 || r.name.includes(term) || r.emoji.includes(term);
+        r.el.hidden = !matches;
         if (matches) visibleCount += 1;
       }
 
@@ -123,10 +177,10 @@ import emojis from '../data/emojis.json';
       const target = event.target;
       if (!(target instanceof Element)) return;
 
-      const emojiItem = target.closest('.emoji-item');
-      if (!(emojiItem instanceof HTMLElement)) return;
+      const copyBtn = target.closest('.emoji-copy');
+      if (!copyBtn) return;
 
-      const emoji = emojiItem.dataset.emoji;
+      const emoji = copyBtn.querySelector('.emoji-char')?.textContent ?? '';
       if (!emoji) return;
 
       try {

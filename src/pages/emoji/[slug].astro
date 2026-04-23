@@ -1,0 +1,295 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/emoji-picker.css';
+import emojis from '../../data/emojis.json';
+import { buildEmojiSlugs } from '../../utils/slug';
+
+export function getStaticPaths() {
+  const slugs = buildEmojiSlugs(emojis);
+  return emojis.map((item, i) => ({
+    params: { slug: slugs[i] },
+    props: { emoji: item.emoji, name: item.name },
+  }));
+}
+
+const { slug } = Astro.params;
+const { emoji, name } = Astro.props;
+
+const title = `${emoji} ${name} - Unicode Emoji | emoji.observer`;
+const description = `Copy the ${name} ${emoji} emoji to your clipboard. Unicode emoji details, code points, and usage.`;
+
+const canonicalUrl = new URL(`/emoji/${slug}/`, Astro.site);
+const codePoints = [...emoji].map((c) => c.codePointAt(0)?.toString(16).toUpperCase()).join('-');
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: title,
+  description,
+  url: canonicalUrl.toString(),
+  image: new URL('/logo512.png', Astro.site).toString(),
+  mainEntity: {
+    '@type': 'Thing',
+    name: `${name} emoji`,
+    description: `The ${name} emoji: ${emoji}`,
+    identifier: `U+${codePoints}`,
+  },
+};
+---
+
+<BaseLayout title={title} description={description} structuredData={structuredData}>
+  <div class="App emoji-page">
+    <nav class="page-nav">
+      <a href="/" class="back-pill">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+        <span>All emojis</span>
+      </a>
+    </nav>
+
+    <div class="emoji-hero-card">
+      <button type="button" class="emoji-hero-char" data-emoji={emoji} title={`Copy ${name}`}>
+        <span>{emoji}</span>
+      </button>
+      <h1 class="emoji-hero-name">{name}</h1>
+      <button type="button" class="copy-pill" data-emoji={emoji}>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="9" y="9" width="11" height="11" rx="2" />
+          <path d="M5 15V5a2 2 0 0 1 2-2h10" />
+        </svg>
+        <span>Copy emoji</span>
+      </button>
+    </div>
+
+    <dl class="emoji-meta">
+      <div class="meta-row">
+        <dt>Code point</dt>
+        <dd><code>U+{codePoints}</code></dd>
+      </div>
+      <div class="meta-row">
+        <dt>Name</dt>
+        <dd>{name}</dd>
+      </div>
+    </dl>
+
+    <div id="toast" class="toast" hidden></div>
+  </div>
+
+  <script is:inline>
+    const toast = document.querySelector('#toast');
+    let toastTimer;
+
+    const showToast = (message) => {
+      if (!toast) return;
+      toast.textContent = message;
+      toast.hidden = false;
+      toast.classList.remove('toast-visible');
+      void toast.offsetWidth;
+      toast.classList.add('toast-visible');
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => {
+        toast.hidden = true;
+        toast.classList.remove('toast-visible');
+      }, 2000);
+    };
+
+    document.addEventListener('click', async (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const btn = target.closest('[data-emoji]');
+      if (!(btn instanceof HTMLElement)) return;
+      const emoji = btn.dataset.emoji;
+      if (!emoji) return;
+
+      try {
+        await navigator.clipboard.writeText(emoji);
+        showToast(`Copied ${emoji} to clipboard!`);
+      } catch (error) {
+        console.error('Failed to copy:', error);
+      }
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  .emoji-page {
+    max-width: 720px;
+  }
+
+  .page-nav {
+    margin-bottom: 24px;
+  }
+
+  .back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px 8px 10px;
+    background: #171b22;
+    border: 1px solid #232933;
+    border-radius: 999px;
+    color: #c4ccd7;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  }
+
+  .back-pill:hover {
+    background: #1d232d;
+    border-color: #2d3440;
+    color: #f5f7fa;
+    transform: translateX(-2px);
+  }
+
+  .back-pill:focus-visible {
+    outline: 2px solid #4f8cff;
+    outline-offset: 2px;
+  }
+
+  .emoji-hero-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 56px 24px 40px;
+    background: #171b22;
+    border: 1px solid #232933;
+    border-radius: 24px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+  }
+
+  .emoji-hero-char {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 180px;
+    height: 180px;
+    background: #1d232d;
+    border: 1px solid #2a313d;
+    border-radius: 28px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.24);
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    appearance: none;
+    padding: 0;
+  }
+
+  .emoji-hero-char > span {
+    font-size: 6.5rem;
+    line-height: 1;
+  }
+
+  .emoji-hero-char:hover {
+    transform: scale(1.04);
+    background: #252c37;
+    border-color: #404a5b;
+  }
+
+  .emoji-hero-char:active {
+    transform: scale(0.97);
+  }
+
+  .emoji-hero-char:focus-visible {
+    outline: 2px solid #4f8cff;
+    outline-offset: 4px;
+  }
+
+  .emoji-hero-name {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0;
+    text-align: center;
+    text-transform: capitalize;
+    color: #f5f7fa;
+  }
+
+  .copy-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: #4f8cff;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+
+  .copy-pill:hover {
+    background: #3d7cf0;
+  }
+
+  .copy-pill:active {
+    transform: scale(0.97);
+  }
+
+  .copy-pill:focus-visible {
+    outline: 2px solid #4f8cff;
+    outline-offset: 2px;
+  }
+
+  .emoji-meta {
+    margin: 28px 0 0;
+    background: #171b22;
+    border: 1px solid #232933;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid #232933;
+  }
+
+  .meta-row:last-child {
+    border-bottom: none;
+  }
+
+  .meta-row dt {
+    flex: 0 0 120px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #7c8798;
+  }
+
+  .meta-row dd {
+    margin: 0;
+    flex: 1;
+    color: #f5f7fa;
+    text-transform: capitalize;
+    font-size: 0.95rem;
+  }
+
+  .meta-row dd code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.9rem;
+    color: #c4ccd7;
+    text-transform: none;
+  }
+
+  @media (max-width: 480px) {
+    .emoji-hero-char {
+      width: 148px;
+      height: 148px;
+    }
+    .emoji-hero-char > span {
+      font-size: 5.25rem;
+    }
+    .meta-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+    .meta-row dt {
+      flex: none;
+    }
+  }
+</style>

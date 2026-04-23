@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.2",
     "@types/node": "^22.15.21",
     "astro": "^5.18.1",
     "typescript": "^5.9.3"
@@ -11,6 +12,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "update": "scripts/update.sh"
   }
 }

@@ -2,11 +2,13 @@
 interface Props {
   title?: string;
   description?: string;
+  structuredData?: Record<string, unknown>;
 }
 
 const {
   title = 'emoji.observer | Search and Copy Emojis',
   description = 'Search, browse, and copy thousands of emojis from a fast, lightweight emoji picker.',
+  structuredData,
 } = Astro.props;
 
 const basePath = import.meta.env.BASE_URL.endsWith('/')
@@ -48,7 +50,7 @@ const homeUrl = new URL(basePath, Astro.site);
 
     <script
       type="application/ld+json"
-      set:html={JSON.stringify({
+      set:html={JSON.stringify(structuredData ?? {
         '@context': 'https://schema.org',
         '@type': 'WebSite',
         name: 'emoji.observer',

@@ -110,20 +110,12 @@ h1 {
 }
 
 .emoji-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 15px;
-  width: 100%;
+  position: relative;
   background: #1d232d;
   border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
   border: 1px solid #2a313d;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
-  appearance: none;
-  font: inherit;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .emoji-item:hover {
@@ -135,6 +127,65 @@ h1 {
 
 .emoji-item:active {
   transform: scale(0.95);
+}
+
+.emoji-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  appearance: none;
+}
+
+.emoji-copy:focus-visible {
+  outline: 2px solid #4f8cff;
+  outline-offset: 2px;
+}
+
+.emoji-details {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #7c8798;
+  background: transparent;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.emoji-item:hover .emoji-details,
+.emoji-details:focus-visible {
+  opacity: 1;
+}
+
+.emoji-details:hover {
+  background: #323a48;
+  color: #f5f7fa;
+}
+
+.emoji-details:focus-visible {
+  outline: 2px solid #4f8cff;
+  outline-offset: 2px;
+}
+
+@media (hover: none) {
+  .emoji-details {
+    opacity: 0.55;
+  }
 }
 
 .emoji-char {

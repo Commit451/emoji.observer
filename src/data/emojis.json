@@ -1656,8 +1656,16 @@
     "name": "woman walking"
   },
   {
-    "emoji": "……",
+    "emoji": "🚶‍➡️",
     "name": "person walking: facing right"
+  },
+  {
+    "emoji": "🚶‍♀️‍➡️",
+    "name": "woman walking: facing right"
+  },
+  {
+    "emoji": "🚶‍♂️‍➡️",
+    "name": "man walking: facing right"
   },
   {
     "emoji": "🧍",
@@ -1684,40 +1692,88 @@
     "name": "woman kneeling"
   },
   {
+    "emoji": "🧎‍➡️",
+    "name": "person kneeling: facing right"
+  },
+  {
+    "emoji": "🧎‍♀️‍➡️",
+    "name": "woman kneeling: facing right"
+  },
+  {
+    "emoji": "🧎‍♂️‍➡️",
+    "name": "man kneeling: facing right"
+  },
+  {
     "emoji": "🧑‍🦯",
     "name": "person with white cane"
+  },
+  {
+    "emoji": "🧑‍🦯‍➡️",
+    "name": "person with white cane: facing right"
   },
   {
     "emoji": "👨‍🦯",
     "name": "man with white cane"
   },
   {
+    "emoji": "👨‍🦯‍➡️",
+    "name": "man with white cane: facing right"
+  },
+  {
     "emoji": "👩‍🦯",
     "name": "woman with white cane"
+  },
+  {
+    "emoji": "👩‍🦯‍➡️",
+    "name": "woman with white cane: facing right"
   },
   {
     "emoji": "🧑‍🦼",
     "name": "person in motorized wheelchair"
   },
   {
+    "emoji": "🧑‍🦼‍➡️",
+    "name": "person in motorized wheelchair: facing right"
+  },
+  {
     "emoji": "👨‍🦼",
     "name": "man in motorized wheelchair"
+  },
+  {
+    "emoji": "👨‍🦼‍➡️",
+    "name": "man in motorized wheelchair: facing right"
   },
   {
     "emoji": "👩‍🦼",
     "name": "woman in motorized wheelchair"
   },
   {
+    "emoji": "👩‍🦼‍➡️",
+    "name": "woman in motorized wheelchair: facing right"
+  },
+  {
     "emoji": "🧑‍🦽",
     "name": "person in manual wheelchair"
+  },
+  {
+    "emoji": "🧑‍🦽‍➡️",
+    "name": "person in manual wheelchair: facing right"
   },
   {
     "emoji": "👨‍🦽",
     "name": "man in manual wheelchair"
   },
   {
+    "emoji": "👨‍🦽‍➡️",
+    "name": "man in manual wheelchair: facing right"
+  },
+  {
     "emoji": "👩‍🦽",
     "name": "woman in manual wheelchair"
+  },
+  {
+    "emoji": "👩‍🦽‍➡️",
+    "name": "woman in manual wheelchair: facing right"
   },
   {
     "emoji": "🏃",
@@ -1730,6 +1786,18 @@
   {
     "emoji": "🏃‍♀️",
     "name": "woman running"
+  },
+  {
+    "emoji": "🏃‍➡️",
+    "name": "person running: facing right"
+  },
+  {
+    "emoji": "🏃‍♀️‍➡️",
+    "name": "woman running: facing right"
+  },
+  {
+    "emoji": "🏃‍♂️‍➡️",
+    "name": "man running: facing right"
   },
   {
     "emoji": "🧑‍🩰",
@@ -2584,7 +2652,7 @@
     "name": "dolphin"
   },
   {
-    "emoji": "⊛ orca",
+    "emoji": "🫍",
     "name": "orca"
   },
   {
@@ -4492,7 +4560,7 @@
     "name": "teddy bear"
   },
   {
-    "emoji": "piñata",
+    "emoji": "🪅",
     "name": "piñata"
   },
   {
@@ -4672,7 +4740,7 @@
     "name": "thong sandal"
   },
   {
-    "emoji": "man’s shoe",
+    "emoji": "👞",
     "name": "man’s shoe"
   },
   {
@@ -4832,7 +4900,7 @@
     "name": "trumpet"
   },
   {
-    "emoji": "⊛ trombone",
+    "emoji": "🪊",
     "name": "trombone"
   },
   {
@@ -5644,7 +5712,7 @@
     "name": "wheelchair symbol"
   },
   {
-    "emoji": "men’s room",
+    "emoji": "🚹",
     "name": "men’s room"
   },
   {
@@ -6758,6 +6826,10 @@
   {
     "emoji": "🇨🇵",
     "name": "flag: Clipperton Island"
+  },
+  {
+    "emoji": "🇨🇶",
+    "name": "flag: Sark"
   },
   {
     "emoji": "🇨🇷",

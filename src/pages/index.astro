@@ -68,6 +68,14 @@ const lazyItems = emojis
   </div>
 
   <script is:inline>
+    // Take over scroll restoration so the browser doesn't fight us by snapping
+    // to 0 before lazy-loaded items have been appended to the grid.
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+
+    const SCROLL_KEY = 'emoji-grid-scroll';
+
     const searchInput = document.querySelector('#emoji-search');
     const clearButton = document.querySelector('#clear-search');
     const emojiGrid = document.querySelector('#emoji-grid');
@@ -112,6 +120,18 @@ const lazyItems = emojis
       }
       emojiGrid.appendChild(frag);
     }
+
+    // Restore scroll only after the lazy items are in the DOM, otherwise the
+    // page is too short and scrollTo silently clamps to the bottom.
+    const savedScroll = sessionStorage.getItem(SCROLL_KEY);
+    if (savedScroll !== null) {
+      window.scrollTo(0, parseInt(savedScroll, 10) || 0);
+    }
+
+    // pagehide covers regular link clicks, browser back/forward, and bfcache.
+    window.addEventListener('pagehide', () => {
+      sessionStorage.setItem(SCROLL_KEY, String(window.scrollY));
+    });
 
     // Cache name/emoji per item once so the search filter doesn't re-read DOM each keystroke.
     const itemRecords = Array.from(document.querySelectorAll('.emoji-item')).map((el) => ({
